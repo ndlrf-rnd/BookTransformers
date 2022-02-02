@@ -12,6 +12,7 @@ import re
 from tokenization import pretokenize
 from modelling import Model
 from training import train
+from datasets import load_dataset
 
 BERT_INIT_CHKPNT = '***'
 BERT_CONFIG = '***'
@@ -27,8 +28,8 @@ texts += positive_texts
 
 assert len(labels) == len(texts)
 
-
-input_ids, input_masks, segment_ids = pretokenize(texts)
+ru_super_glue_terra = load_dataset("russian_super_glue", 'terra')
+input_ids, input_masks, segment_ids = pretokenize(ru_super_glue_terra)
 
 dimension_output = 2
 learning_rate = 2e-5

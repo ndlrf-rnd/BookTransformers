@@ -3,8 +3,6 @@ import re
 from tqdm import tqdm
 from transformers import BertTokenizer
 
-tokenizer = BertTokenizer.from_pretrained('./ruBookBertTokenizer')
-print(tokenizer('Чертовы гуки, засели прямо на деревьях'))
 #with open('***') as fopen:
 #    v = fopen.read().split('\n')[:-1]
 #v = [i.split('\t') for i in v]
@@ -23,7 +21,13 @@ print(tokenizer('Чертовы гуки, засели прямо на дере�
 #
 #    def convert_ids_to_tokens(self, ids):
 #        return [sp_model.IdToPiece(i) for i in ids]
+tokenizer = BertTokenizer.from_pretrained('./ruBookBertTokenizer', do_lower_case = False)
+print(tokenizer('Чертовы гуки, засели прямо на деревьях'))
 
+def tokenize_function_terra_rcb(examples):
+    premise = examples["premise"]
+    hypo = examples["hypothesis"]
+    return tokenizer(f"[CLS] {premise} [SEP] {hypo}", padding="max_length", max_length=512, truncation=True)
 
 def pretokenize(texts):
     tokenizer = Tokenizer(v)
