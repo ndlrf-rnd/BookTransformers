@@ -1,31 +1,28 @@
 import json
 import re
-import sentencepiece as spm
 from tqdm import tqdm
-from prepro_utils import preprocess_text, encode_ids, encode_pieces
+from transformers import BertTokenizer
 
+tokenizer = BertTokenizer.from_pretrained('./ruBookBertTokenizer')
+print(tokenizer('Чертовы гуки, засели прямо на деревьях'))
+#with open('***') as fopen:
+#    v = fopen.read().split('\n')[:-1]
+#v = [i.split('\t') for i in v]
+#v = {i[0]: i[1] for i in v}
 
-sp_model = spm.SentencePieceProcessor()
-sp_model.Load('***')
-
-with open('***') as fopen:
-    v = fopen.read().split('\n')[:-1]
-v = [i.split('\t') for i in v]
-v = {i[0]: i[1] for i in v}
-
-class Tokenizer:
-    def __init__(self, v):
-        self.vocab = v
-        pass
-
-    def tokenize(self, string):
-        return encode_pieces(sp_model, string, return_unicode=False, sample=False)
-
-    def convert_tokens_to_ids(self, tokens):
-        return [sp_model.PieceToId(piece) for piece in tokens]
-
-    def convert_ids_to_tokens(self, ids):
-        return [sp_model.IdToPiece(i) for i in ids]
+#class Tokenizer:
+#    def __init__(self, v):
+#        self.vocab = v
+#        pass
+#
+#    def tokenize(self, string):
+#        return encode_pieces(sp_model, string, return_unicode=False, sample=False)
+#
+#    def convert_tokens_to_ids(self, tokens):
+#        return [sp_model.PieceToId(piece) for piece in tokens]
+#
+#    def convert_ids_to_tokens(self, ids):
+#        return [sp_model.IdToPiece(i) for i in ids]
 
 
 def pretokenize(texts):

@@ -13,3 +13,4 @@ oauth2client
 mesh-tensorflow==0.1.13
 tfds-nightly==3.1.0.dev202005080105 
 tensorflow-estimator==1.15.1
+transformers==3.5.1
