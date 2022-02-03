@@ -21,24 +21,19 @@ from transformers import BertTokenizer
 #
 #    def convert_ids_to_tokens(self, ids):
 #        return [sp_model.IdToPiece(i) for i in ids]
-tokenizer = BertTokenizer.from_pretrained('./ruBookBertTokenizer', do_lower_case = False)
-print(tokenizer('Чертовы гуки, засели прямо на деревьях'))
 
-def tokenize_function_terra_rcb(examples):
-    premise = examples["premise"]
-    hypo = examples["hypothesis"]
-    return tokenizer(f"[CLS] {premise} [SEP] {hypo}", padding="max_length", max_length=512, truncation=True)
+MAX_SEQ_LENGTH = 100
 
 def pretokenize(texts):
-    tokenizer = Tokenizer(v)
+    #tokenizer = Tokenizer(v)
+    tokenizer = BertTokenizer.from_pretrained('./ruBookBertTokenizer', do_lower_case = False)
     input_masks, input_ids, segment_ids = [], [], []
     for text in tqdm(texts):
-        tokens_a = tokenizer.tokenize(text)
-        if len(tokens_a) > MAX_SEQ_LENGTH - 2:
-            tokens_a = tokens_a[:(MAX_SEQ_LENGTH - 2)]
-        tokens = ["<cls>"] + tokens_a + ["<sep>"]
+        input_id = tokenizer(text)['input_ids']
+        if len(input_id) > MAX_SEQ_LENGTH:
+            input_id = input_id[:MAX_SEQ_LENGTH]
+        tokens = input_id
         segment_id = [0] * len(tokens)
-        input_id = tokenizer.convert_tokens_to_ids(tokens)
         input_mask = [1] * len(input_id)
         padding = [0] * (MAX_SEQ_LENGTH - len(input_id))
         input_id += padding
