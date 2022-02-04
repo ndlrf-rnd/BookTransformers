@@ -30,6 +30,7 @@ def pretokenize(texts):
     input_masks, input_ids, segment_ids = [], [], []
     for text in tqdm(texts):
         input_id = tokenizer(text)['input_ids']
+        #label = text['label']
         if len(input_id) > MAX_SEQ_LENGTH:
             input_id = input_id[:MAX_SEQ_LENGTH]
         tokens = input_id

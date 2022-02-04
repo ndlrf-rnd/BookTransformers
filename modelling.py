@@ -2,14 +2,19 @@ from bert import optimization
 from bert import modeling
 import tensorflow as tf
 
+BERT_CONFIG = 'config.json'
 bert_config = modeling.BertConfig.from_json_file(BERT_CONFIG)
+
+warmup_proportion = 0.1
 
 class Model:
     def __init__(
         self,
         dimension_output,
         learning_rate = 2e-5,
+        num_train_steps = None
     ):
+        num_warmup_steps = int(num_train_steps * warmup_proportion)
         self.X = tf.placeholder(tf.int32, [None, None])
         self.segment_ids = tf.placeholder(tf.int32, [None, None])
         self.input_masks = tf.placeholder(tf.int32, [None, None])
