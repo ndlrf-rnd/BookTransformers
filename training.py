@@ -1,6 +1,9 @@
 import time
+from tqdm import tqdm
+import numpy as np
 
 EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 3, 0, 0, 0
+batch_size = 60
 
 def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, train_segment_ids, test_segment_ids, train_Y, test_Y, sess, model):
     while True:
