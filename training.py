@@ -2,10 +2,10 @@ import time
 from tqdm import tqdm
 import numpy as np
 
-EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 3, 0, 0, 0
 batch_size = 60
 
 def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, train_segment_ids, test_segment_ids, train_Y, test_Y, sess, model):
+    EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 3, 0, 0, 0
     while True:
         lasttime = time.time()
         if CURRENT_CHECKPOINT == EARLY_STOPPING:
@@ -52,4 +52,25 @@ def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, 
                 },
             )
             test_loss += cost
+        train_loss /= len(train_input_ids) / batch_size
+        train_acc /= len(train_input_ids) / batch_size
+        test_loss /= len(test_input_ids) / batch_size
+        test_acc /= len(test_input_ids) / batch_size
+
+        if test_acc > CURRENT_ACC:
+            print(
+                'epoch: %d, pass acc: %f, current acc: %f'
+                % (EPOCH, CURRENT_ACC, test_acc)
+            )
+            CURRENT_ACC = test_acc
+            CURRENT_CHECKPOINT = 0
+        else:
+            CURRENT_CHECKPOINT += 1
+
+        print('time taken:', time.time() - lasttime)
+        print(
+            'epoch: %d, training loss: %f, training acc: %f, valid loss: %f, valid acc: %f\n'
+            % (EPOCH, train_loss, train_acc, test_loss, test_acc)
+        )
+        EPOCH += 1
     return model
