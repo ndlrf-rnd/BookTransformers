@@ -1,5 +1,4 @@
 import bert
-from bert import run_classifier
 from bert import tokenization
 from bert import optimization
 from bert import modeling
@@ -13,13 +12,9 @@ from modelling import Model
 from training import train
 from training import batch_size
 from datasets import load_dataset
+from dataset_utils import join_terra_rcb
 
 BERT_INIT_CHKPNT = 'model.ckpt-1445000'
-
-def join_terra(examples):
-    premise = examples["premise"]
-    hypo = examples["hypothesis"]
-    return {'text': f'{premise} [SEP] {hypo}'}
 
 ru_super_glue_terra = load_dataset("russian_super_glue", 'terra')
 train_terra = ru_super_glue_terra['train']
@@ -28,8 +23,8 @@ valid_terra = ru_super_glue_terra['validation']
 train_Y = train_terra['label']
 valid_Y = valid_terra['label']
 
-train_terra_texts = train_terra.map(join_terra)['text']
-valid_terra_texts = valid_terra.map(join_terra)['text']
+train_terra_texts = train_terra.map(join_terra_rcb)['text']
+valid_terra_texts = valid_terra.map(join_terra_rcb)['text']
 
 train_input_ids, train_input_masks, train_segment_ids = pretokenize(train_terra_texts)
 valid_input_ids, valid_input_masks, valid_segment_ids = pretokenize(valid_terra_texts)

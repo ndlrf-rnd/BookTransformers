@@ -3,25 +3,6 @@ import re
 from tqdm import tqdm
 from transformers import BertTokenizer
 
-#with open('***') as fopen:
-#    v = fopen.read().split('\n')[:-1]
-#v = [i.split('\t') for i in v]
-#v = {i[0]: i[1] for i in v}
-
-#class Tokenizer:
-#    def __init__(self, v):
-#        self.vocab = v
-#        pass
-#
-#    def tokenize(self, string):
-#        return encode_pieces(sp_model, string, return_unicode=False, sample=False)
-#
-#    def convert_tokens_to_ids(self, tokens):
-#        return [sp_model.PieceToId(piece) for piece in tokens]
-#
-#    def convert_ids_to_tokens(self, ids):
-#        return [sp_model.IdToPiece(i) for i in ids]
-
 MAX_SEQ_LENGTH = 100
 
 def pretokenize(texts):
