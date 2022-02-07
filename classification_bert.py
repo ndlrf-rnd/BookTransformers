@@ -12,12 +12,18 @@ from sklearn import metrics
 from modelling import Model
 from training import train, batch_size
 from datasets import load_dataset
-from dataset_utils import join_terra_rcb, extract_hf_data, preprocess_dataset_texts
 from testing import inference
+from dataset_utils import *
 
 BERT_INIT_CHKPNT = 'model.ckpt-1445000'
 
 ru_super_glue_terra = load_dataset("russian_super_glue", 'terra')
+ru_super_glue_rcb = load_dataset("russian_super_glue", 'rcb')
+ru_super_glue_parus = load_dataset("russian_super_glue", 'parus')
+ru_super_glue_muserc = load_dataset("russian_super_glue", 'muserc')
+ru_super_glue_russe = load_dataset("russian_super_glue", 'russe')
+ru_super_glue_rwsd = load_dataset("russian_super_glue", 'rwsd')
+ru_super_glue_danetqa = load_dataset("russian_super_glue", 'danetqa')
 
 train_terra, valid_terra, test_terra, train_Y, valid_Y, test_Y = extract_hf_data(ru_super_glue_terra)
 input_ids, input_masks, segment_ids = preprocess_dataset_texts(train_terra, valid_terra, test_terra)

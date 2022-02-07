@@ -46,14 +46,14 @@ def extract_hf_data(raw_dataset):
     test_Y = test_ds['label']
     return train_ds, valid_ds, test_ds, train_Y, valid_Y, test_Y
 
-def preprocess_dataset_texts(train_terra, valid_terra, test_terra):
-    train_terra_texts = train_terra.map(join_terra_rcb)['text']
-    valid_terra_texts = valid_terra.map(join_terra_rcb)['text']
-    test_terra_texts = test_terra.map(join_terra_rcb)['text']
+def preprocess_dataset_texts(train_dataset, valid_dataset, test_dataset):
+    train_dataset_texts = train_dataset.map(join_terra_rcb)['text']
+    valid_dataset_texts = valid_dataset.map(join_terra_rcb)['text']
+    test_dataset_texts = test_dataset.map(join_terra_rcb)['text']
 
-    train_input_ids, train_input_masks, train_segment_ids = pretokenize(train_terra_texts)
-    valid_input_ids, valid_input_masks, valid_segment_ids = pretokenize(valid_terra_texts)
-    test_input_ids, test_input_masks, test_segment_ids = pretokenize(test_terra_texts)
+    train_input_ids, train_input_masks, train_segment_ids = pretokenize(train_dataset_texts)
+    valid_input_ids, valid_input_masks, valid_segment_ids = pretokenize(valid_dataset_texts)
+    test_input_ids, test_input_masks, test_segment_ids = pretokenize(test_dataset_texts)
     return {'train': train_input_ids, 'valid': valid_input_ids, 'test': test_input_ids},\
            {'train': train_input_masks, 'valid': valid_input_masks, 'test': test_input_masks},\
            {'train': train_segment_ids, 'valid': valid_segment_ids, 'test': test_segment_ids},\
