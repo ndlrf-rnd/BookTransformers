@@ -44,3 +44,21 @@ class Model:
         )
         self.accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
         
+class Model_embed:
+    def __init__(
+        self,
+    ):
+        self.X = tf.placeholder(tf.int32, [None, None])
+        self.segment_ids = tf.placeholder(tf.int32, [None, None])
+        self.input_masks = tf.placeholder(tf.int32, [None, None])
+        self.Y = tf.placeholder(tf.int32, [None])
+        
+        model = modeling.BertModel(
+            config=bert_config,
+            is_training=False,
+            input_ids=self.X,
+            input_mask=self.input_masks,
+            token_type_ids=self.segment_ids,
+            use_one_hot_embeddings=False)
+        
+        self.output_layer = model.get_pooled_output()
