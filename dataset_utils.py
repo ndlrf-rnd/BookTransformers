@@ -1,4 +1,5 @@
 from tokenization import pretokenize
+from datasets import load_dataset
 
 def join_terra_rcb(examples):
     premise = examples["premise"]
@@ -57,3 +58,15 @@ def preprocess_dataset_texts(train_dataset, valid_dataset, test_dataset):
     return {'train': train_input_ids, 'valid': valid_input_ids, 'test': test_input_ids},\
            {'train': train_input_masks, 'valid': valid_input_masks, 'test': test_input_masks},\
            {'train': train_segment_ids, 'valid': valid_segment_ids, 'test': test_segment_ids},\
+
+def load_all_rusglue_datasets():
+    ru_super_glue_terra = load_dataset("russian_super_glue", 'terra')
+    ru_super_glue_rcb = load_dataset("russian_super_glue", 'rcb')
+    ru_super_glue_parus = load_dataset("russian_super_glue", 'parus')
+    ru_super_glue_muserc = load_dataset("russian_super_glue", 'muserc')
+    ru_super_glue_russe = load_dataset("russian_super_glue", 'russe')
+    ru_super_glue_rwsd = load_dataset("russian_super_glue", 'rwsd')
+    ru_super_glue_danetqa = load_dataset("russian_super_glue", 'danetqa')
+    return {'terra': ru_super_glue_terra, 'rcb': ru_super_glue_rcb, 'parus': ru_super_glue_parus,
+            'muserc': ru_super_glue_muserc, 'russe': ru_super_glue_russe, 'rwsd': ru_super_glue_rwsd,
+            'danetqa': ru_super_glue_danetqa}
