@@ -7,6 +7,7 @@ import numpy as np
 import json
 import itertools
 import re
+import argparse
 from sklearn import metrics
 
 from modelling import Model
@@ -16,14 +17,16 @@ from dataset_utils import *
 
 BERT_INIT_CHKPNT = 'model.ckpt-1445000'
 
-
-def main():
+def main(args):
     ru_super_glue_datasets = load_all_rusglue_datasets()
     train_terra, valid_terra, test_terra, train_Y, valid_Y, test_Y = extract_hf_data(ru_super_glue_datasets['terra'])
     input_ids, input_masks, segment_ids = preprocess_dataset_texts(train_terra, valid_terra, test_terra)
-    dimension_output = 2
-    learning_rate = 2e-5
-    epoch = 2
+    if args.dataset_name == 'rcb':
+        dimension_output = 3
+    else:
+        dimension_output = 2
+    learning_rate = args.lr
+    epoch = args.epochs
     num_train_steps = int((len(input_ids['train']) + len(input_ids['valid'])) / batch_size * epoch)
 
     tf.reset_default_graph()
@@ -48,4 +51,15 @@ def main():
         )
     )
 
-main()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Main variables for finetuning')
+    parser.add_argument('--epochs', type=int,
+                        help='number of training epochs')
+    parser.add_argument('--batch_size', type=int)
+    parser.add_argument('--lr', type=float)
+    parser.add_argument('--model_name', type=str)
+    parser.add_argument('--dataset_name', type=str)
+
+
+    args = parser.parse_args()
+    main(args)

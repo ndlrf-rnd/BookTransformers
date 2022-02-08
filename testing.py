@@ -1,7 +1,8 @@
 import numpy as np
 from tqdm import tqdm
+import pickle
 
-def inference(test_input_ids, test_input_masks, test_segment_ids, model, sess, batch_size):
+def inference(test_input_ids, test_input_masks, test_segment_ids, model, sess, batch_size, dump=True):
     predict_Y = []
     pbar = tqdm(
         range(0, len(test_input_ids), batch_size), desc = 'validation minibatch loop'
