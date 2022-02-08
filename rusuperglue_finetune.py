@@ -12,7 +12,7 @@ from sklearn import metrics
 
 from modelling import Model
 from training import train, batch_size
-from testing import inference
+from inference import *
 from dataset_utils import *
 
 BERT_INIT_CHKPNT = 'model.ckpt-1445000'
@@ -45,11 +45,15 @@ def main(args):
     model = train(input_ids['train'], input_ids['valid'], input_masks['train'], input_masks['valid'], segment_ids['train'], segment_ids['valid'], train_Y, valid_Y, sess, model)
 
     predict_valid_Y = inference(input_ids['valid'], input_masks['valid'], segment_ids['valid'], model, sess, batch_size)
+    print('\n\n', predict_valid_Y, '\n\n')
     print(
         metrics.classification_report(
             valid_Y, predict_valid_Y, target_names = ['negative', 'positive'], digits=5
         )
     )
+    predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
+    terra_label_map = {1: 'entailment', 0: 'not_entailment'}
+    pack_n_dump_predictions_jsonl(test_terra, predict_test_Y, terra_label_map, 'test.jsonl')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Main variables for finetuning')

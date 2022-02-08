@@ -3,7 +3,7 @@ import numpy as np
 
 batch_size = 60
 
-def embed_texts(train_input_ids, train_input_masks, train_segment_ids, sess, model):
+def embed_texts(train_input_ids, train_input_masks, train_segment_ids, sess, model, dump=True):
     pbar = tqdm(
         range(0, len(train_input_ids), batch_size), desc = 'embeddings extracting'
     )
