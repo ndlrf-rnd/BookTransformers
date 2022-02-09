@@ -5,7 +5,7 @@ import numpy as np
 batch_size = 60
 
 def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, train_segment_ids, test_segment_ids, train_Y, test_Y, sess, model):
-    EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 3, 0, 0, 0
+    EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 5, 0, 0, 0
     while True:
         lasttime = time.time()
         if CURRENT_CHECKPOINT == EARLY_STOPPING:
