@@ -1,5 +1,7 @@
 from bert import optimization
-from bert import modeling
+from bert import modeling as modeling_bert
+from albert import modeling as modeling_albert
+from bigbird import modeling as modeling_bigbird
 import tensorflow as tf
 
 BERT_CONFIG = 'config.json'
@@ -12,7 +14,8 @@ class Model:
         self,
         dimension_output,
         learning_rate = 2e-5,
-        num_train_steps = None
+        num_train_steps = None,
+        model_name = 'bert'
     ):
         num_warmup_steps = int(num_train_steps * warmup_proportion)
         self.X = tf.placeholder(tf.int32, [None, None])
@@ -20,13 +23,25 @@ class Model:
         self.input_masks = tf.placeholder(tf.int32, [None, None])
         self.Y = tf.placeholder(tf.int32, [None])
         
-        model = modeling.BertModel(
-            config=bert_config,
-            is_training=False,
-            input_ids=self.X,
-            input_mask=self.input_masks,
-            token_type_ids=self.segment_ids,
-            use_one_hot_embeddings=False)
+        if model_name.lower() == 'bert':
+            model = modeling_bert.BertModel(
+                config=bert_config,
+                is_training=False,
+                input_ids=self.X,
+                input_mask=self.input_masks,
+                token_type_ids=self.segment_ids,
+                use_one_hot_embeddings=False)
+        elif model_name.lower() == 'albert':
+            model = modeling_albert.AlbertModel(
+                config = albert_config,
+                is_training = is_training,
+                input_ids = input_ids,
+                input_mask = input_mask,
+                token_type_ids = segment_ids,
+                use_one_hot_embeddings = use_one_hot_embeddings,
+            )
+        elif model_name.lower() == 'bigbird':
+            model = modeling_bigbird.BertModel(bert_config)
         
         output_layer = model.get_pooled_output()
         self.logits = tf.layers.dense(output_layer, dimension_output)
