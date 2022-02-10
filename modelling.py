@@ -1,11 +1,11 @@
 from bert import optimization
 from bert import modeling as modeling_bert
 from albert import modeling as modeling_albert
-from bigbird import modeling as modeling_bigbird
+from bigbird.core import modeling as modeling_bigbird
 import tensorflow as tf
 
 BERT_CONFIG = 'config.json'
-bert_config = modeling.BertConfig.from_json_file(BERT_CONFIG)
+bert_config = modeling_bert.BertConfig.from_json_file(BERT_CONFIG)
 
 warmup_proportion = 0.1
 
@@ -68,7 +68,7 @@ class Model_embed:
         self.input_masks = tf.placeholder(tf.int32, [None, None])
         self.Y = tf.placeholder(tf.int32, [None])
         
-        model = modeling.BertModel(
+        model = modeling_bert.BertModel(
             config=bert_config,
             is_training=False,
             input_ids=self.X,
