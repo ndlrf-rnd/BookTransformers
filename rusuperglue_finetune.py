@@ -16,6 +16,7 @@ from inference import *
 from dataset_utils import *
 
 BERT_INIT_CHKPNT = 'model.ckpt-1445000'
+ALBERT_INIT_CHKPNT = 'model.ckpt-1100000'
 
 def main(args):
     ru_super_glue_datasets = load_all_rusglue_datasets()
@@ -28,8 +29,10 @@ def main(args):
 
     tf.reset_default_graph()
     sess = tf.InteractiveSession()
+    print(args.model_name)
     model = Model(
         dimension_output,
+        args.model_name,
         learning_rate,
         num_train_steps
     )
@@ -37,7 +40,14 @@ def main(args):
     sess.run(tf.global_variables_initializer())
     var_lists = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert')
     saver = tf.train.Saver(var_list = var_lists)
-    saver.restore(sess, BERT_INIT_CHKPNT)
+
+
+    if args.model_name == 'albert':
+        saver.restore(sess, ALBERT_INIT_CHKPNT)
+    elif args.model_name == 'bert':
+        saver.restore(sess, BERT_INIT_CHKPNT)
+    elif args.model_name == 'bigbird':
+        saver.restore(sess, BIGBIRD_INIT_CHKPNT)
 
     model = train(input_ids['train'], input_ids['valid'], input_masks['train'], input_masks['valid'], segment_ids['train'], segment_ids['valid'], train_Y, valid_Y, sess, model)
 
@@ -57,7 +67,7 @@ if __name__ == "__main__":
                         help='number of training epochs')
     parser.add_argument('--batch_size', type=int)
     parser.add_argument('--lr', type=float)
-    parser.add_argument('--model_name', type=str)
+    parser.add_argument('--model_name', type=str, default='bert')
 
     args = parser.parse_args()
     main(args)
