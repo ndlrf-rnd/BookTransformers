@@ -3,7 +3,9 @@ import re
 from tqdm import tqdm
 from transformers import BertTokenizer
 
-MAX_SEQ_LENGTH = 100
+#MAX_SEQ_LENGTH = 100
+# bigbird
+MAX_SEQ_LENGTH = 512
 
 def pretokenize(texts):
     #tokenizer = Tokenizer(v)

@@ -2,21 +2,53 @@ import bert
 from bert import tokenization
 from bert import optimization
 from bert import modeling
-import tensorflow as tf
-import numpy as np
-import json
-import itertools
 import re
+import json
 import argparse
+import itertools
+import collections
+import numpy as np
+import tensorflow as tf
 from sklearn import metrics
 
-from modelling import Model
+from modelling import Model, Model_BigBird
 from training import train, batch_size
 from inference import *
 from dataset_utils import *
 
 BERT_INIT_CHKPNT = 'model.ckpt-1445000'
 ALBERT_INIT_CHKPNT = 'model.ckpt-1100000'
+BIGBIRD_INIT_CHKPNT = 'model.ckpt-450000'
+
+def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
+    """Compute the union of the current variables and checkpoint variables."""
+    assignment_map = {}
+    initialized_variable_names = {}
+
+    name_to_variable = collections.OrderedDict()
+    for var in tvars:
+        name = var.name
+        m = re.match('^(.*):\\d+$', name)
+        if m is not None:
+            name = m.group(1)
+        name_to_variable[name] = var
+
+    init_vars = tf.train.list_variables(init_checkpoint)
+
+    assignment_map = collections.OrderedDict()
+    for x in init_vars:
+        (name, var) = (x[0], x[1])
+        name_r = name.replace('bert/embeddings/LayerNorm', 'bert/encoder/LayerNorm')
+        if name_r not in name_to_variable:
+            continue
+        if 'embeddings/position_embeddings' in name_r:
+            continue
+        assignment_map[name] = name_to_variable[name_r]
+        initialized_variable_names[name_r] = 1
+        initialized_variable_names[name_r + ':0'] = 1
+
+    return (assignment_map, initialized_variable_names)
+
 
 def main(args):
     ru_super_glue_datasets = load_all_rusglue_datasets()
@@ -30,16 +62,30 @@ def main(args):
     tf.reset_default_graph()
     sess = tf.InteractiveSession()
     print(args.model_name)
-    model = Model(
-        dimension_output,
-        args.model_name,
-        learning_rate,
-        num_train_steps
-    )
+    if args.model_name.lower() == 'bigbird':
+        model = Model_BigBird(
+                dimension_output,
+                num_train_steps,
+                learning_rate
+                )
+    else:
+        model = Model(
+            dimension_output,
+            args.model_name,
+            learning_rate,
+            num_train_steps
+        )
 
     sess.run(tf.global_variables_initializer())
-    var_lists = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert')
-    saver = tf.train.Saver(var_list = var_lists)
+    if args.model_name == 'bigbird':
+        tvars = tf.trainable_variables()
+        assignment_map, initialized_variable_names = get_assignment_map_from_checkpoint(tvars,
+                                                                                        BIGBIRD_INIT_CHKPNT)
+        saver = tf.train.Saver(var_list = assignment_map)
+    else:
+        var_lists = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert')
+        saver = tf.train.Saver(var_list = var_lists)
+
 
 
     if args.model_name == 'albert':
