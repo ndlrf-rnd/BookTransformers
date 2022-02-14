@@ -1,43 +1,27 @@
 # BookTransformers
 Descriptions and links providing for trained BookTransformers
 
-Список обученных моделей
-Все модели обучены на текстах файла "ru-cc.txt.gz" (230 Gb книг)
-- elmo : https://github.com/allenai/bilm-tf
-(LSTM Hidden Size/Output size) - loss 
-(1024/128) - ~30.0
-(2048/256) - ~20.0
-Пока не заводил модель на inference
+Encoder модели для текстов на русском языке. Модели предназначены для получения эмбеддингов, дообучения линейных моделей поверх эмбеддингов для классификации. Особенность моделей: обучение на корпусе книг 230 Гб
 
-* fasttext : https://github.com/facebookresearch/fastText
-ru-cc_skipgram_fasttext_dim300_epoch6 и ru-cc_cbow_fasttext
-skipgram и cbow претрейн векторов fasttext
-Заводил как pretrained_vectors на задаче определения "Экстремизм/неЭкстремизм" - давало прирост в районе погрешности, не бенчмаркал
+# Usage
+## Finetuning
 
-* gpt3-neo/weights : https://github.com/EleutherAI/gpt-neo (данные и токенайзер заготовлены по гайду) 
-"./model.ckpt-*" - GPT-NEO XL (1.3B parameters)
-"./300m/model.ckpt-*" - GPT-NEO medium (300M parameters)
-"./125m/model.ckpt-..." - GPT-NEO small (125M parameters)
+## Embeddings extraction
 
-* bert : https://github.com/google-research/bert
+# Training text example:
+"Несколько помощников в просторных белых блузах добавляли щепотки размолотых минералов и сухих трав в кипящие реторты, стоящие на металлических полках. Никто не обратил на него внимания. Филп откашлялся и позвал Нобера.
+Разъяренный врачеватель метнул на него уничтожающий взгляд и проворчал:
+\- Опять вы! Вы же видите, я занят!
+Отсутствующий вид и угрюмый тон Оана были профилактическими мерами удивительной эффективности: человек, который был им однажды поставлен на ноги, старался больше не попадать ему в руки. Встревоженные помощники разом повернули головы в сторону гостя.
+\- Я зашел узнать, как чувствует себя Афикит Алексу, - сказал Филп. - Мудрецы директории дали мне разрешение… Обещаю, что потом перестану злоупотреблять вашей благосклонностью: утром я начинаю трехдневную медитацию перед посвящением в рыцари…
+"
 
-* bigbird : https://github.com/google-research/bigbird
-BERT и BigBird тестил с вот этой либой для саммаризации https://github.com/dmmiller612/bert-extractive-summarizer
-Или сам метод саммаризации model-agnostic, или же модели просто хорошо отрабатывали на саммари
-Также дообучал BERT на RussianSuperGLUE (https://russiansuperglue.com/leaderboard/2)
-С помощью скрипта на pytorch-lightning ниже
-Дообучил на все задачи кроме двух, качество так себе
+Papers on models:
+* https://arxiv.org/abs/1810.04805 (BERT)
+* https://arxiv.org/abs/1909.11942 (ALBERT)
+* https://arxiv.org/abs/2007.14062 (BigBird)
 
-* albert : https://github.com/google-research/albert
-tiny/base/large sizes
-
-* pegasus : https://github.com/google-research/pegasus
-base/small sizes
-Обычно эти модели применяют как декодеры в связке с BigBird в качестве энкодера, еще не пробовал
-
-* w2v : https://radimrehurek.com/gensim/models/word2vec.html
-что-то пошло не так, эмбеддинги при отображении с помощью tsne давали хаотично расположенные точки
-
-Полезные ссылки
-* tensorflow bert finetuning: https://github.com/huseinzol05/malaya/blob/master/pretrained-model/bert/how-to-classification.ipynb
-* huggingface w/ pytorch-lightning finetuning: https://colab.research.google.com/drive/10aiF1rw2ijUvERJW13Zw4ByVELQ31rEO?usp=sharing
+Model repositories:
+* https://github.com/google-research/bert
+* https://github.com/google-research/albert 
+* https://github.com/google-research/bigbird 
