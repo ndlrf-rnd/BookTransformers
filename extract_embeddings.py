@@ -25,13 +25,22 @@ var_lists = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope = 'bert')
 saver = tf.train.Saver(var_list = var_lists)
 saver.restore(sess, BERT_INIT_CHKPNT)
 
-tokenized_collections = [pretokenize(chunk) for chunk in text_collections]
-chunks_prefixes = ['asians_racism', 'religion_discrimination', 'sex_discrimination']
-for i in range(len(text_collections)):
-    count = 0
-    for j in range(len(text_collections[i])):
-        embeddings = embed_texts(tokenized_collections[i][0][j], 
-                                 tokenized_collections[i][1][j], 
-                                 tokenized_collections[i][2][j], 
-                                 sess, model, chunks_prefixes[i]+str(count))
-        count += 1
+def main(args):
+    file_paths = args.file_paths
+    tokenized_collections = [pretokenize(chunk) for chunk in text_collections]
+    chunks_prefixes = ['asians_racism', 'religion_discrimination', 'sex_discrimination']
+    for i in range(len(text_collections)):
+        count = 0
+        for j in range(len(text_collections[i])):
+            embeddings = embed_texts(tokenized_collections[i][0][j], 
+                                     tokenized_collections[i][1][j], 
+                                     tokenized_collections[i][2][j], 
+                                     sess, model, chunks_prefixes[i]+str(count))
+            count += 1
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Main variables for embeddings extraction')
+    parser.add_argument('--file_paths', type=str)
+
+    args = parser.parse_args()
+    main(args)
