@@ -70,3 +70,7 @@ def load_all_rusglue_datasets():
     return {'terra': ru_super_glue_terra, 'rcb': ru_super_glue_rcb, 'parus': ru_super_glue_parus,
             'muserc': ru_super_glue_muserc, 'russe': ru_super_glue_russe, 'rwsd': ru_super_glue_rwsd,
             'danetqa': ru_super_glue_danetqa}
+
+def construct_rusuperglue_label_maps():
+    terra_label_map = {1: 'entailment', 0: 'not_entailment'}
+    return {'terra': terra_label_map}

@@ -61,7 +61,6 @@ def main(args):
 
     tf.reset_default_graph()
     sess = tf.InteractiveSession()
-    print(args.model_name)
     if args.model_name.lower() == 'bigbird':
         model = Model_BigBird(
                 dimension_output,
@@ -104,8 +103,8 @@ def main(args):
         )
     )
     predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
-    terra_label_map = {1: 'entailment', 0: 'not_entailment'}
-    pack_n_dump_predictions_jsonl(test_terra, predict_test_Y, terra_label_map, 'test.jsonl')
+    label_maps = construct_rusuperglue_label_maps()
+    pack_n_dump_predictions_jsonl(test_terra, predict_test_Y, label_maps['terra'], 'test.jsonl')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Main variables for finetuning')
