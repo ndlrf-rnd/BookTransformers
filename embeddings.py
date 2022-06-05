@@ -1,5 +1,7 @@
 from tqdm import tqdm
 import numpy as np
+import pickle
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 batch_size = 60
 
@@ -12,15 +14,18 @@ def embed_texts(train_input_ids, train_input_masks, train_segment_ids, sess, mod
         index = min(i + batch_size, len(train_input_ids))
         #print('idxs', i, ':', index)
         batch_x = [train_input_ids[i: index]]
+        batch_x = pad_sequences(batch_x, padding='post')
         batch_masks = [train_input_masks[i: index]]
+        batch_masks = pad_sequences(batch_masks, padding='post')
         batch_segment = [train_segment_ids[i: index]]
+        batch_segment = pad_sequences(batch_segment, padding='post')
         #print('batch_x len', len(batch_x[0]), ':', len(batch_x[0][0]))
         batch_embeddings = sess.run(
             [model.output_layer],
             feed_dict = {
                 model.X: batch_x,
-                model.segment_ids: batch_segment,
-                model.input_masks: batch_masks
+               # model.segment_ids: batch_segment,
+               # model.input_masks: batch_masks
             },
         )
         embeddings += batch_embeddings
