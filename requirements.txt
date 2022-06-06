@@ -17,4 +17,5 @@ tensorflow-estimator==1.15.1
 transformers==3.5.1
 bert-tensorflow
 datasets
+kfserving
 #numpy==1.19.5
