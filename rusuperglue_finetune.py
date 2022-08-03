@@ -4,6 +4,7 @@ from bert import optimization
 from bert import modeling
 import re
 import json
+import pickle
 import argparse
 import itertools
 import collections
@@ -51,9 +52,17 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
 
 
 def main(args):
-    ru_super_glue_datasets = load_all_rusglue_datasets()
-    train_terra, valid_terra, test_terra, train_Y, valid_Y, test_Y = extract_hf_data(ru_super_glue_datasets['terra'])
-    input_ids, input_masks, segment_ids = preprocess_dataset_texts(train_terra, valid_terra, test_terra)
+    if args.filenames == '':
+        ru_super_glue_datasets = load_all_rusglue_datasets()
+        train_terra, valid_terra, test_terra, train_Y, valid_Y, test_Y = extract_hf_data(ru_super_glue_datasets['terra'])
+        input_ids, input_masks, segment_ids = preprocess_dataset_texts(train_terra, valid_terra, test_terra, args.filenames)
+    else:
+        input_ids, input_masks, segment_ids = preprocess_dataset_texts(None, None, None, args.filenames)
+        fil = args.filenames
+        with open(f'./dsets/{fil}_train_label.pkl', 'rb') as f:
+            train_Y = pickle.load(f)
+        with open(f'./dsets/{fil}_val_label.pkl', 'rb') as f:
+            valid_Y = pickle.load(f)
     dimension_output = 2
     learning_rate = args.lr
     epoch = args.epochs
@@ -113,6 +122,7 @@ if __name__ == "__main__":
     parser.add_argument('--batch_size', type=int)
     parser.add_argument('--lr', type=float)
     parser.add_argument('--model_name', type=str, default='bert')
+    parser.add_argument('--filenames', type=str, default='')
 
     args = parser.parse_args()
     main(args)
