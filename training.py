@@ -2,10 +2,10 @@ import time
 from tqdm import tqdm
 import numpy as np
 
-batch_size = 60
+batch_size = 8
 
 def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, train_segment_ids, test_segment_ids, train_Y, test_Y, sess, model):
-    EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 5, 0, 0, 0
+    EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 15, 0, 0, 0
     while True:
         lasttime = time.time()
         if CURRENT_CHECKPOINT == EARLY_STOPPING:
@@ -52,6 +52,7 @@ def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, 
                 },
             )
             test_loss += cost
+            test_acc += acc
         train_loss /= len(train_input_ids) / batch_size
         train_acc /= len(train_input_ids) / batch_size
         test_loss /= len(test_input_ids) / batch_size
