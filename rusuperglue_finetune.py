@@ -67,6 +67,13 @@ def main(args):
             train_Y = pickle.load(f)
         with open(f'./dsets/{args.task}_val_label.pkl', 'rb') as f:
             valid_Y = pickle.load(f)
+            
+    # testing purposes only
+    # input_ids['train'], input_masks['train'], segment_ids['train'] = input_ids['train'][:16], input_masks['train'][:16], segment_ids['train'][:16]
+    # input_ids['valid'], input_masks['valid'], segment_ids['valid'] = input_ids['valid'][:16], input_masks['valid'][:16], segment_ids['valid'][:16]
+    # input_ids['test'], input_masks['test'], segment_ids['test'] = input_ids['test'][:16], input_masks['test'][:16], segment_ids['test'][:16]
+    
+    
     if args.task == 'rcb':
         dimension_output = 3
     else:
@@ -111,7 +118,7 @@ def main(args):
     elif args.model_name == 'bigbird':
         saver.restore(sess, BIGBIRD_INIT_CHKPNT)
 
-    model = train(input_ids['train'], input_ids['valid'], input_masks['train'], input_masks['valid'], segment_ids['train'], segment_ids['valid'], train_Y, valid_Y, sess, model)
+    model = train(input_ids, input_masks, segment_ids, train_Y, valid_Y, sess, model, args.task)
 
     predict_valid_Y = inference(input_ids['valid'], input_masks['valid'], segment_ids['valid'], model, sess, batch_size)
     print(
@@ -120,7 +127,7 @@ def main(args):
         )
     )
     predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
-    with open(f'./{args.task}_test_label.pkl', 'wb') as f:
+    with open(f'./{args.task}_test_label_last.pkl', 'wb') as f:
         pickle.dump(f, predict_test_Y)
     # label_maps = construct_rusuperglue_label_maps()
     # pack_n_dump_predictions_jsonl(test_terra, predict_test_Y, label_maps['terra'], 'test.jsonl')

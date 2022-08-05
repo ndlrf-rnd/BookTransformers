@@ -1,11 +1,14 @@
 import time
 from tqdm import tqdm
 import numpy as np
+from inference import *
 
 batch_size = 8
 
-def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, train_segment_ids, test_segment_ids, train_Y, test_Y, sess, model):
-    EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 15, 0, 0, 0
+def train(input_ids, input_masks, segment_ids, train_Y, test_Y, sess, model, task):
+    train_input_ids, test_input_ids, train_input_masks, test_input_masks, train_segment_ids, test_segment_ids = input_ids['train'], \
+    input_ids['valid'], input_masks['train'], input_masks['valid'], segment_ids['train'], segment_ids['valid']
+    EARLY_STOPPING, CURRENT_CHECKPOINT, CURRENT_ACC, EPOCH = 5, 0, 0, 0
     while True:
         lasttime = time.time()
         if CURRENT_CHECKPOINT == EARLY_STOPPING:
@@ -65,6 +68,9 @@ def train(train_input_ids, test_input_ids, train_input_masks, test_input_masks, 
             )
             CURRENT_ACC = test_acc
             CURRENT_CHECKPOINT = 0
+            predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
+            with open(f'./{task}_test_label_epoch{EPOCH}.pkl', 'wb') as f:
+                pickle.dump(f, predict_test_Y)
         else:
             CURRENT_CHECKPOINT += 1
 
