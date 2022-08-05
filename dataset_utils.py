@@ -48,17 +48,17 @@ def extract_hf_data(raw_dataset):
     test_Y = test_ds['label']
     return train_ds, valid_ds, test_ds, train_Y, valid_Y, test_Y
 
-def preprocess_dataset_texts(train_dataset, valid_dataset, test_dataset, filenames):
-    if filenames == '':
+def preprocess_dataset_texts(train_dataset, valid_dataset, test_dataset, task, pickledData):
+    if not pickledData:
         train_dataset_texts = train_dataset.map(join_terra_rcb)['text']
         valid_dataset_texts = valid_dataset.map(join_terra_rcb)['text']
         test_dataset_texts = test_dataset.map(join_terra_rcb)['text']
     else:
-        with open(f'./dsets/{filenames}_train_texts.pkl', 'rb') as f:
+        with open(f'./dsets/{task}_train_texts.pkl', 'rb') as f:
             train_dataset_texts = pickle.load(f)
-        with open(f'./dsets/{filenames}_val_texts.pkl', 'rb') as f:
+        with open(f'./dsets/{task}_val_texts.pkl', 'rb') as f:
             valid_dataset_texts = pickle.load(f)
-        with open(f'./dsets/{filenames}_test_texts.pkl', 'rb') as f:
+        with open(f'./dsets/{task}_test_texts.pkl', 'rb') as f:
             test_dataset_texts = pickle.load(f)
 
     train_input_ids, train_input_masks, train_segment_ids = pretokenize(train_dataset_texts)

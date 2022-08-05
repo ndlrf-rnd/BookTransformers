@@ -52,20 +52,28 @@ def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
 
 
 def main(args):
-    if args.filenames == '':
+    if not args.pickledData:
         ru_super_glue_datasets = load_all_rusglue_datasets()
         train_terra, valid_terra, test_terra, train_Y, valid_Y, test_Y = extract_hf_data(ru_super_glue_datasets['terra'])
-        input_ids, input_masks, segment_ids = preprocess_dataset_texts(train_terra, valid_terra, test_terra, args.filenames)
+        input_ids, input_masks, segment_ids = preprocess_dataset_texts(train_terra, 
+                                                                       valid_terra, 
+                                                                       test_terra, None, args.pickledData)
     else:
-        input_ids, input_masks, segment_ids = preprocess_dataset_texts(None, None, None, args.filenames)
-        fil = args.filenames
-        with open(f'./dsets/{fil}_train_label.pkl', 'rb') as f:
+        input_ids, input_masks, segment_ids = preprocess_dataset_texts(None, 
+                                                                       None, 
+                                                                       None, args.task, args.pickledData)
+        task = args.task
+        with open(f'./dsets/{args.task}_train_label.pkl', 'rb') as f:
             train_Y = pickle.load(f)
-        with open(f'./dsets/{fil}_val_label.pkl', 'rb') as f:
+        with open(f'./dsets/{args.task}_val_label.pkl', 'rb') as f:
             valid_Y = pickle.load(f)
-    dimension_output = 2
+    if args.task == 'rcb':
+        dimension_output = 3
+    else:
+        dimension_output = 2
+
     learning_rate = args.lr
-    epoch = args.epochs
+    epoch = args.max_epochs
     num_train_steps = int((len(input_ids['train']) + len(input_ids['valid'])) / batch_size * epoch)
 
     tf.reset_default_graph()
@@ -112,17 +120,19 @@ def main(args):
         )
     )
     predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
-    label_maps = construct_rusuperglue_label_maps()
-    pack_n_dump_predictions_jsonl(test_terra, predict_test_Y, label_maps['terra'], 'test.jsonl')
+    with open(f'./{args.task}_test_label.pkl', 'wb') as f:
+        pickle.dump(f, predict_test_Y)
+    # label_maps = construct_rusuperglue_label_maps()
+    # pack_n_dump_predictions_jsonl(test_terra, predict_test_Y, label_maps['terra'], 'test.jsonl')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Main variables for finetuning')
-    parser.add_argument('--epochs', type=int,
+    parser.add_argument('--max_epochs', type=int,
                         help='number of training epochs')
-    parser.add_argument('--batch_size', type=int)
     parser.add_argument('--lr', type=float)
+    parser.add_argument('--pickledData', type=bool)
+    parser.add_argument('--task', type=str)
     parser.add_argument('--model_name', type=str, default='bert')
-    parser.add_argument('--filenames', type=str, default='')
 
     args = parser.parse_args()
     main(args)
