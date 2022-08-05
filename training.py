@@ -68,9 +68,10 @@ def train(input_ids, input_masks, segment_ids, train_Y, test_Y, sess, model, tas
             )
             CURRENT_ACC = test_acc
             CURRENT_CHECKPOINT = 0
-            predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
-            with open(f'./{task}_test_label_epoch{EPOCH}.pkl', 'wb') as f:
-                pickle.dump(f, predict_test_Y)
+            if EPOCH > 3:
+                predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
+                with open(f'./{task}_test_label_epoch{EPOCH}.pkl', 'wb') as f:
+                    pickle.dump(predict_test_Y, f)
         else:
             CURRENT_CHECKPOINT += 1
 
