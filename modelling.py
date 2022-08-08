@@ -5,9 +5,10 @@ from bigbird import modeling as modeling_bigbird
 import tensorflow as tf
 
 BERT_CONFIG = 'configs/baseBert_config.json'
+SBER_BERT_CONFIG = 'sber_bert/config.json'
 ALBERT_CONFIG = 'configs/baseAlbert_config.json'
-BIGBIRD_CONFIG = 'configs/baseAlbert_config.json'
 bert_config = modeling_bert.BertConfig.from_json_file(BERT_CONFIG)
+sber_bert_config = modeling_bert.BertConfig.from_json_file(SBER_BERT_CONFIG)
 albert_config = modeling_albert.AlbertConfig.from_json_file(ALBERT_CONFIG)
 bigbird_config = {
     'attention_probs_dropout_prob': 0.2,
@@ -134,6 +135,15 @@ class Model:
                 token_type_ids = self.segment_ids,
                 use_one_hot_embeddings = False,
             )
+        elif model_name == 'sber_bert':
+            model = modeling_bert.BertModel(
+                config = sber_bert_config,
+                is_training = False,
+                input_ids = self.X,
+                input_mask = self.input_masks,
+                token_type_ids = self.segment_ids,
+                use_one_hot_embeddings = False,
+            )
         output_layer = model.get_pooled_output()
         self.logits = tf.layers.dense(output_layer, dimension_output)
         
@@ -156,16 +166,16 @@ class Model_embed:
         self,
     ):
         self.X = tf.placeholder(tf.int32, [None, None])
-        self.segment_ids = tf.placeholder(tf.int32, [None, None])
-        self.input_masks = tf.placeholder(tf.int32, [None, None])
-        self.Y = tf.placeholder(tf.int32, [None])
+ #       self.segment_ids = tf.placeholder(tf.int32, [None, None])
+ #       self.input_masks = tf.placeholder(tf.int32, [None, None])
+ #       self.Y = tf.placeholder(tf.int32, [None])
         
         model = modeling_bert.BertModel(
             config=bert_config,
             is_training=False,
             input_ids=self.X,
-            input_mask=self.input_masks,
-            token_type_ids=self.segment_ids,
+ #           input_mask=self.input_masks,
+ #           token_type_ids=self.segment_ids,
             use_one_hot_embeddings=False)
         
         self.output_layer = model.get_pooled_output()

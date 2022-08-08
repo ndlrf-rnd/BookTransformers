@@ -20,6 +20,7 @@ from dataset_utils import *
 BERT_INIT_CHKPNT = 'model.ckpt-1445000'
 ALBERT_INIT_CHKPNT = 'model.ckpt-1100000'
 BIGBIRD_INIT_CHKPNT = 'model.ckpt-450000'
+SBER_BERT_INIT_CHKPNT = 'sber_bert/ruBert_base.ckpt'
 
 def get_assignment_map_from_checkpoint(tvars, init_checkpoint):
     """Compute the union of the current variables and checkpoint variables."""
@@ -57,11 +58,17 @@ def main(args):
         train_terra, valid_terra, test_terra, train_Y, valid_Y, test_Y = extract_hf_data(ru_super_glue_datasets['terra'])
         input_ids, input_masks, segment_ids = preprocess_dataset_texts(train_terra, 
                                                                        valid_terra, 
-                                                                       test_terra, None, args.pickledData)
+                                                                       test_terra, 
+                                                                       None, 
+                                                                       args.pickledData, 
+                                                                       args.tokenizer_path)
     else:
         input_ids, input_masks, segment_ids = preprocess_dataset_texts(None, 
                                                                        None, 
-                                                                       None, args.task, args.pickledData)
+                                                                       None, 
+                                                                       args.task, 
+                                                                       args.pickledData,
+                                                                       args.tokenizer_path)
         task = args.task
         with open(f'./dsets/{args.task}_train_label.pkl', 'rb') as f:
             train_Y = pickle.load(f)
@@ -69,9 +76,9 @@ def main(args):
             valid_Y = pickle.load(f)
             
     # testing purposes only
-    # input_ids['train'], input_masks['train'], segment_ids['train'] = input_ids['train'][:16], input_masks['train'][:16], segment_ids['train'][:16]
-    # input_ids['valid'], input_masks['valid'], segment_ids['valid'] = input_ids['valid'][:16], input_masks['valid'][:16], segment_ids['valid'][:16]
-    # input_ids['test'], input_masks['test'], segment_ids['test'] = input_ids['test'][:16], input_masks['test'][:16], segment_ids['test'][:16]
+    input_ids['train'], input_masks['train'], segment_ids['train'] = input_ids['train'][:16], input_masks['train'][:16], segment_ids['train'][:16]
+    input_ids['valid'], input_masks['valid'], segment_ids['valid'] = input_ids['valid'][:16], input_masks['valid'][:16], segment_ids['valid'][:16]
+    input_ids['test'], input_masks['test'], segment_ids['test'] = input_ids['test'][:16], input_masks['test'][:16], segment_ids['test'][:16]
     
     
     if args.task == 'rcb':
@@ -110,13 +117,14 @@ def main(args):
         saver = tf.train.Saver(var_list = var_lists)
 
 
-
     if args.model_name == 'albert':
         saver.restore(sess, ALBERT_INIT_CHKPNT)
     elif args.model_name == 'bert':
         saver.restore(sess, BERT_INIT_CHKPNT)
     elif args.model_name == 'bigbird':
         saver.restore(sess, BIGBIRD_INIT_CHKPNT)
+    elif args.model_name == 'sber_bert':
+        saver.restore(sess, SBER_BERT_INIT_CHKPNT)
 
     model = train(input_ids, input_masks, segment_ids, train_Y, valid_Y, sess, model, args.task)
 
@@ -140,6 +148,7 @@ if __name__ == "__main__":
     parser.add_argument('--pickledData', type=bool)
     parser.add_argument('--task', type=str)
     parser.add_argument('--model_name', type=str, default='bert')
+    parser.add_argument('--tokenizer_path', type=str, default='ruBookBertTokenizer')
 
     args = parser.parse_args()
     main(args)

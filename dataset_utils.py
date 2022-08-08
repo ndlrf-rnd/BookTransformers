@@ -48,7 +48,7 @@ def extract_hf_data(raw_dataset):
     test_Y = test_ds['label']
     return train_ds, valid_ds, test_ds, train_Y, valid_Y, test_Y
 
-def preprocess_dataset_texts(train_dataset, valid_dataset, test_dataset, task, pickledData):
+def preprocess_dataset_texts(train_dataset, valid_dataset, test_dataset, task, pickledData, tokenizer_path):
     if not pickledData:
         train_dataset_texts = train_dataset.map(join_terra_rcb)['text']
         valid_dataset_texts = valid_dataset.map(join_terra_rcb)['text']
@@ -61,9 +61,9 @@ def preprocess_dataset_texts(train_dataset, valid_dataset, test_dataset, task, p
         with open(f'./dsets/{task}_test_texts.pkl', 'rb') as f:
             test_dataset_texts = pickle.load(f)
 
-    train_input_ids, train_input_masks, train_segment_ids = pretokenize(train_dataset_texts)
-    valid_input_ids, valid_input_masks, valid_segment_ids = pretokenize(valid_dataset_texts)
-    test_input_ids, test_input_masks, test_segment_ids = pretokenize(test_dataset_texts)
+    train_input_ids, train_input_masks, train_segment_ids = pretokenize(train_dataset_texts, tokenizer_path)
+    valid_input_ids, valid_input_masks, valid_segment_ids = pretokenize(valid_dataset_texts, tokenizer_path)
+    test_input_ids, test_input_masks, test_segment_ids = pretokenize(test_dataset_texts, tokenizer_path)
     return {'train': train_input_ids, 'valid': valid_input_ids, 'test': test_input_ids},\
            {'train': train_input_masks, 'valid': valid_input_masks, 'test': test_input_masks},\
            {'train': train_segment_ids, 'valid': valid_segment_ids, 'test': test_segment_ids},\

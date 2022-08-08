@@ -7,8 +7,15 @@ from transformers import BertTokenizer
 # bigbird
 MAX_SEQ_LENGTH = 512
 
-def pretokenize(texts):
-    tokenizer = BertTokenizer.from_pretrained('./ruBookBertTokenizer', do_lower_case = False)
+def pretokenize(texts, tokenizer_path):
+    if 'sp' in tokenizer_path:
+        tokenizer = tokenization.FullTokenizer(
+            vocab_file=tokenizer_path,
+            do_lower_case=False,
+            spm_model_file=tokenizer_path,
+        )
+    else:
+        tokenizer = BertTokenizer.from_pretrained(tokenizer_path, do_lower_case = False)
     input_masks, input_ids, segment_ids = [], [], []
     for text in tqdm(texts):
         input_id = tokenizer(text)['input_ids']
