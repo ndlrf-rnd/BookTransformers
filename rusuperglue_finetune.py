@@ -128,7 +128,7 @@ def main(args):
     )
     predict_test_Y = inference(input_ids['test'], input_masks['test'], segment_ids['test'], model, sess, batch_size)
     with open(f'./{args.task}_test_label_last.pkl', 'wb') as f:
-        pickle.dump(f, predict_test_Y)
+        pickle.dump(predict_test_Y, f)
     # label_maps = construct_rusuperglue_label_maps()
     # pack_n_dump_predictions_jsonl(test_terra, predict_test_Y, label_maps['terra'], 'test.jsonl')
 
