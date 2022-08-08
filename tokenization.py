@@ -2,6 +2,7 @@ import json
 import re
 from tqdm import tqdm
 from transformers import BertTokenizer
+from spm_utils import FullTokenizer
 
 #MAX_SEQ_LENGTH = 100
 # bigbird
@@ -9,16 +10,22 @@ MAX_SEQ_LENGTH = 512
 
 def pretokenize(texts, tokenizer_path):
     if 'sp' in tokenizer_path:
-        tokenizer = tokenization.FullTokenizer(
-            vocab_file=tokenizer_path,
+        tokenizer = FullTokenizer(
+            vocab_file=tokenizer_path+'.vocab',
             do_lower_case=False,
-            spm_model_file=tokenizer_path,
+            spm_model_file=tokenizer_path+'.model',
         )
     else:
         tokenizer = BertTokenizer.from_pretrained(tokenizer_path, do_lower_case = False)
+    # tokenizer.__call__ = tokenizer.tokenize
     input_masks, input_ids, segment_ids = [], [], []
     for text in tqdm(texts):
-        input_id = tokenizer(text)['input_ids']
+        if 'sp' in tokenizer_path:
+            tokens = tokenizer.tokenize(text)
+            input_id = tokenizer.convert_tokens_to_ids(tokens)
+            # print(input_id)
+        else:
+            input_id = tokenizer(text)['input_ids']
         if len(input_id) > MAX_SEQ_LENGTH:
             input_id = input_id[:MAX_SEQ_LENGTH]
         tokens = input_id

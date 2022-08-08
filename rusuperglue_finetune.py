@@ -76,9 +76,9 @@ def main(args):
             valid_Y = pickle.load(f)
             
     # testing purposes only
-    input_ids['train'], input_masks['train'], segment_ids['train'] = input_ids['train'][:16], input_masks['train'][:16], segment_ids['train'][:16]
-    input_ids['valid'], input_masks['valid'], segment_ids['valid'] = input_ids['valid'][:16], input_masks['valid'][:16], segment_ids['valid'][:16]
-    input_ids['test'], input_masks['test'], segment_ids['test'] = input_ids['test'][:16], input_masks['test'][:16], segment_ids['test'][:16]
+    # input_ids['train'], input_masks['train'], segment_ids['train'] = input_ids['train'][:16], input_masks['train'][:16], segment_ids['train'][:16]
+    # input_ids['valid'], input_masks['valid'], segment_ids['valid'] = input_ids['valid'][:16], input_masks['valid'][:16], segment_ids['valid'][:16]
+    # input_ids['test'], input_masks['test'], segment_ids['test'] = input_ids['test'][:16], input_masks['test'][:16], segment_ids['test'][:16]
     
     
     if args.task == 'rcb':
